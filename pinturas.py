@@ -236,7 +236,7 @@ for art in config.artistas[1:2]:
         plt.imshow(valid)
         plt.title("Threshold Manual")
         
-        plt.savefig("tratamento_imagem_%s.png" % pint)
+        plt.savefig("saidas/curvaturas/tratamento_imagem_%s.png" % pint)
         
         print np.unique(objects)
         print labels
@@ -279,11 +279,11 @@ for art in config.artistas[1:2]:
             #plt.imshow(valid)
             #plt.gray()
             
-            plt.savefig("curvaturas/contorno_curvatura_%s_segm_%s.png" % (pint, i))
+            plt.savefig("saidas/curvaturas/contorno_curvatura_%s_segm_%s.png" % (pint, i))
 
         # histograma dos picos
         plt.figure(0)
         plt.clf()
         plt.hist(qtd_picos)
-        plt.savefig("curvaturas/%s_hist_picos.png" % pint)
+        plt.savefig("saidas/curvaturas/%s_hist_picos.png" % pint)
 
