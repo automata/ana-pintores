@@ -6,3 +6,5 @@ artistas = ['Pollock', 'Picasso',
             'Miro', 'Gogh', 'Kandinsky', 'Matisse',
             'Poussin', 'Caravaggio', 'Hals', 'Rembrandt', 'Velazquez',
             'Vermeer']
+
+artistas = ['Picasso', 'Kandinsky', 'Caravaggio', 'Rembrandt']

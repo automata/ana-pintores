@@ -7,7 +7,10 @@ import numpy as np
 import Image
 import matplotlib.pyplot as plt
 import config
+import pickle as pk
 
+
+D = []
 
 def filter_by_size(im_label, size):
     new = np.zeros(im_label.shape)
@@ -171,119 +174,126 @@ def curvatura(vetor, sigma):
 
     return k
 
-########################################################################################
-########################################################################################
+###############################################################################
+###############################################################################
 
-for art in config.artistas[1:2]:
+for art in config.artistas:
+    print 'Pintor %s' % art
     path = art.lower()
     # quantas pinturas de cada pintor?
-    for pint in range(2,4):
-        k = 1 # qual grupo de segmentos? (neles existem as regioes conexas)
-        valid = Image.open('pinturas/%s/seg%s.%s.png' % (path, k, pint)).convert('L')
+    for pint in range(5):
+        print '`- Quadro %s' % pint
+        # quais grupos de segmentos? (neles existem as regioes conexas)
+        for k in range(1,5):
+            print ' `- Segmento %s' % k
+            valid = Image.open('pinturas/%s/seg%s.%s.png' % (path, k, pint)).convert('L')
         
-        # image 0 fundo, 255 obj, intermediarios --> 1 obj e 0 fundo intermediarios fundo
-        valid = valid.point(lambda p: p > 1 and 1).convert("L")  # threshold
-        valid = np.array(valid)  # transform as array
-        
-        
-        # preenche linha preta nas bordas
-        linha, coluna = valid.shape
-        valid[:, (coluna - 1)] = 0
-        valid[:, 0] = 0
-        valid[:, (coluna - 2)] = 0
-        valid[:, 1] = 0
-        
-        valid[(linha - 1), :] = 0
-        valid[0, :] = 0
-        valid[(linha - 2), :] = 0
-        valid[1, :] = 0
-        
-        
-        #filled holes
-        #filled = sp.ndimage.morphology.binary_fill_holes(valid)
-        filled = ndimage.morphology.binary_fill_holes(valid, structure=np.ones((3,3))).astype(int)
-
-        # find  and mark labels
-        objects, num_objects = ndimage.label(valid)
-        
-        # filter By size
-        size = 250
-        filt = filter_by_size(objects, size)
-        
-        #determina os labels da imagem filtrada
-        labels = np.unique(filt)
-        filt = np.uint8(filt)
-        
-        #objects_slices = sp.ndimage.find_objects(filt)
-        
-        #for obj_slices in objects_slices:
-        #    print thre[obj_slices]
-        
-        plt.figure(0)
-        plt.subplot(2, 2, 3)    
-        plt.imshow(objects)
-        plt.title("Objetos Localizados")
-        
-        plt.subplot(2, 2, 4)
-        plt.imshow(filt)
-        plt.title("Objetos filtrados size = %s" % size)
-        
-        plt.subplot(2, 2, 2)
-        plt.imshow(valid)
-        plt.title("Burados preenchidos")
-        
-        plt.subplot(2, 2, 1)
-        plt.imshow(valid)
-        plt.title("Threshold Manual")
-        
-        plt.savefig("saidas/curvaturas/tratamento_imagem_%s.png" % pint)
-        
-        print np.unique(objects)
-        print labels
-        
-        qtd_picos = []
-        #exclui o primeiro elemento indice 0 (background)
-        labels = np.delete(labels, [0])
-        
-        for i in labels:
-            C = contorno(filt, i, 0)
+            # image 0 fundo, 255 obj, intermediarios --> 1 obj e 0 fundo intermediarios fundo
+            valid = valid.point(lambda p: p > 1 and 1).convert("L")  # threshold
+            valid = np.array(valid)  # transform as array
             
-            Kurv = curvatura(C, 50)
-
-            nbr, L, V = maximos(Kurv, 0.02)
-            # guarda a quantidade de picos
-            qtd_picos.append(nbr)
             
-            plt.figure(i)
-            plt.clf()
-
-            x = np.real(C)
-            y = np.imag(C)
+            # preenche linha preta nas bordas
+            linha, coluna = valid.shape
+            valid[:, (coluna - 1)] = 0
+            valid[:, 0] = 0
+            valid[:, (coluna - 2)] = 0
+            valid[:, 1] = 0
             
-            plt.subplot(1, 3, 1)
-            plt.plot(x, y)
-            for j in range(nbr):
-                x1 = np.real(C[L[j]])
-                y1 = np.imag(C[L[j]])
-                plt.plot(x1, y1, 'xr', linewidth=5)
-            plt.title("Regiao")
-
-            plt.subplot(1, 3, 2)
-            plt.plot(Kurv)
-            plt.plot(L, V, 'xr', linewidth=5)
-            plt.title("Curvatura (picos)")
+            valid[(linha - 1), :] = 0
+            valid[0, :] = 0
+            valid[(linha - 2), :] = 0
+            valid[1, :] = 0
+                    
+            # filled holes
+            # filled = sp.ndimage.morphology.binary_fill_holes(valid)
+            filled = ndimage.morphology.binary_fill_holes(valid, structure=np.ones((3,3))).astype(int)
             
-            plt.subplot(1, 3, 3)
-            plt.hist(Kurv)
-            plt.title("Curvatura")
-            #plt.imshow(valid)
-            #plt.gray()
+            # find  and mark labels
+            objects, num_objects = ndimage.label(valid)
             
-            plt.savefig("saidas/curvaturas/contorno_curvatura_%s_segm_%s.png" % (pint, i))
+            # filter By size
+            size = 250
+            filt = filter_by_size(objects, size)
+            
+            # determina os labels da imagem filtrada
+            labels = np.unique(filt)
+            filt = np.uint8(filt)
+            
+            # objects_slices = sp.ndimage.find_objects(filt)
+            
+            # for obj_slices in objects_slices:
+            #     print thre[obj_slices]
+            
+            plt.figure(0)
+            plt.subplot(2, 2, 3)    
+            plt.imshow(objects)
+            plt.title("Objetos Localizados")
+            
+            plt.subplot(2, 2, 4)
+            plt.imshow(filt)
+            plt.title("Objetos filtrados size = %s" % size)
+            
+            plt.subplot(2, 2, 2)
+            plt.imshow(valid)
+            plt.title("Burados preenchidos")
+            
+            plt.subplot(2, 2, 1)
+            plt.imshow(valid)
+            plt.title("Threshold Manual")
+            # nome do pintor . operacao . num da pintura . num do grupo de segs
+            plt.savefig("saidas/curvaturas/%s.tratamento.%s.%s.png" % (path, pint, k))
+        
+            # print np.unique(objects)
+            # print labels
+            
+            qtd_picos = []
+            # exclui o primeiro elemento indice 0 (background)
+            labels = np.delete(labels, [0])
+            
+            for i in labels:
+                C = contorno(filt, i, 0)
+                
+                Kurv = curvatura(C, 50)
+                
+                nbr, L, V = maximos(Kurv, 0.02)
+                # guarda a quantidade de picos
+                qtd_picos.append(nbr)
+                
+                plt.figure(i)
+                plt.clf()
+                
+                x = np.real(C)
+                y = np.imag(C)
+                
+                plt.subplot(1, 3, 1)
+                plt.plot(x, y)
+                for j in range(nbr):
+                    x1 = np.real(C[L[j]])
+                    y1 = np.imag(C[L[j]])
+                    plt.plot(x1, y1, 'xr', linewidth=5)
+                plt.title("Regiao")
+                
+                plt.subplot(1, 3, 2)
+                plt.plot(Kurv)
+                plt.plot(L, V, 'xr', linewidth=5)
+                plt.title("Curvatura (picos)")
+                
+                plt.subplot(1, 3, 3)
+                plt.hist(Kurv)
+                plt.title("Curvatura")
+                
+                # nome do pintor . op . num pintura . num grupo segs . num seg
+                plt.savefig("saidas/curvaturas/%s.curvatura.%s.%s.%s.png" % (path, pint, k, i))
+                
+            # histograma dos picos
+            # plt.figure(0)
+            # plt.clf()
+            # plt.hist(qtd_picos)
+            # # pintor . op . num pintura . num grupo segs
+            # plt.savefig("saidas/curvaturas/%s.histpicos.%s.%s.png" % (path, pint, k))
+            D.append(qtd_picos)
 
-        # histograma dos picos
-        plt.figure(0)
-        plt.clf()
-        plt.hist(qtd_picos)
-        plt.savefig("saidas/curvaturas/%s_hist_picos.png" % pint)
-
+f = open('dados/picos.pkl', 'wb')
+pk.dump(D, f)
+f.close()
