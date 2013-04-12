@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import config
 import pickle as pk
 
+fig = plt.figure(num=None, figsize=(10, 10))
+#plot = fig.add_subplot(111)
 
 D = []
 
@@ -224,26 +226,26 @@ for art in config.artistas:
             
             # for obj_slices in objects_slices:
             #     print thre[obj_slices]
+
             
-            plt.figure(0)
-            plt.subplot(2, 2, 3)    
-            plt.imshow(objects)
-            plt.title("Objetos Localizados")
+            plot = fig.add_subplot(2, 2, 3)
+            plot.imshow(objects)
+            plot.set_title("Objetos Localizados")
             
-            plt.subplot(2, 2, 4)
-            plt.imshow(filt)
-            plt.title("Objetos filtrados size = %s" % size)
+            plot = fig.add_subplot(2, 2, 4)
+            plot.imshow(filt)
+            plot.set_title("Objetos filtrados size = %s" % size)
             
-            plt.subplot(2, 2, 2)
-            plt.imshow(valid)
-            plt.title("Burados preenchidos")
+            plot = fig.add_subplot(2, 2, 2)
+            plot.imshow(valid)
+            plot.set_title("Burados preenchidos")
             
-            plt.subplot(2, 2, 1)
-            plt.imshow(valid)
-            plt.title("Threshold Manual")
+            plot = fig.add_subplot(2, 2, 1)
+            plot.imshow(valid)
+            plot.set_title("Threshold Manual")
             # nome do pintor . operacao . num da pintura . num do grupo de segs
-            plt.savefig("saidas/curvaturas/%s.tratamento.%s.%s.png" % (path, pint, k))
-        
+            fig.savefig("saidas/curvaturas/%s.tratamento.%s.%s.png" % (path, pint, k))
+
             # print np.unique(objects)
             # print labels
             
@@ -260,31 +262,33 @@ for art in config.artistas:
                 # guarda a quantidade de picos
                 qtd_picos.append(nbr)
                 
-                plt.figure(i)
-                plt.clf()
+                #plt.figure(i)
+                #plt.clf()
                 
                 x = np.real(C)
                 y = np.imag(C)
+
+                fig.clf()
                 
-                plt.subplot(1, 3, 1)
-                plt.plot(x, y)
+                plot = fig.add_subplot(1, 3, 1)
+                plot.plot(x, y)
                 for j in range(nbr):
                     x1 = np.real(C[L[j]])
                     y1 = np.imag(C[L[j]])
-                    plt.plot(x1, y1, 'xr', linewidth=5)
-                plt.title("Regiao")
+                    plot.plot(x1, y1, 'xr', linewidth=5)
+                plot.set_title("Regiao")
                 
-                plt.subplot(1, 3, 2)
-                plt.plot(Kurv)
-                plt.plot(L, V, 'xr', linewidth=5)
-                plt.title("Curvatura (picos)")
+                plot = fig.add_subplot(1, 3, 2)
+                plot.plot(Kurv)
+                plot.plot(L, V, 'xr', linewidth=5)
+                plot.set_title("Curvatura (picos)")
                 
-                plt.subplot(1, 3, 3)
-                plt.hist(Kurv)
-                plt.title("Curvatura")
+                plot = fig.add_subplot(1, 3, 3)
+                plot.hist(Kurv)
+                plot.set_title("Curvatura")
                 
                 # nome do pintor . op . num pintura . num grupo segs . num seg
-                plt.savefig("saidas/curvaturas/%s.curvatura.%s.%s.%s.png" % (path, pint, k, i))
+                fig.savefig("saidas/curvaturas/%s.curvatura.%s.%s.%s.png" % (path, pint, k, i))
                 
             # histograma dos picos
             # plt.figure(0)
@@ -292,6 +296,7 @@ for art in config.artistas:
             # plt.hist(qtd_picos)
             # # pintor . op . num pintura . num grupo segs
             # plt.savefig("saidas/curvaturas/%s.histpicos.%s.%s.png" % (path, pint, k))
+            print qtd_picos
             D.append(qtd_picos)
 
 f = open('dados/picos.pkl', 'wb')
