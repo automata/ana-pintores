@@ -183,10 +183,10 @@ for art in config.artistas:
     print 'Pintor %s' % art
     path = art.lower()
     # quantas pinturas de cada pintor?
-    for pint in range(5):
+    for pint in [2]:#range(5):
         print '`- Quadro %s' % pint
         # quais grupos de segmentos? (neles existem as regioes conexas)
-        for k in range(1,5):
+        for k in [3]:#range(1,5):
             print ' `- Segmento %s' % k
             valid = Image.open('pinturas/%s/seg%s.%s.png' % (path, k, pint)).convert('L')
             print '%s/seg%s.%s.png' % (path, k, pint)
@@ -221,7 +221,7 @@ for art in config.artistas:
             
             # determina os labels da imagem filtrada
             labels = np.unique(filt)
-            filt = np.uint8(filt)
+            labels = np.uint32(labels)
             
             # objects_slices = sp.ndimage.find_objects(filt)
             

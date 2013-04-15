@@ -7,6 +7,5 @@ artistas = ['Pollock', 'Picasso',
             'Poussin', 'Caravaggio', 'Hals', 'Rembrandt', 'Velazquez',
             'Vermeer']
 
-artistas = ['Picasso', 'Miro', 'Caravaggio', 'Rembrandt']
-
+artistas = ['Picasso', 'Kandinsky', 'Caravaggio', 'Rembrandt']
 
