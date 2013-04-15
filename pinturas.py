@@ -189,6 +189,7 @@ for art in config.artistas:
         for k in range(1,5):
             print ' `- Segmento %s' % k
             valid = Image.open('pinturas/%s/seg%s.%s.png' % (path, k, pint)).convert('L')
+            print '%s/seg%s.%s.png' % (path, k, pint)
         
             # image 0 fundo, 255 obj, intermediarios --> 1 obj e 0 fundo intermediarios fundo
             valid = valid.point(lambda p: p > 1 and 1).convert("L")  # threshold
